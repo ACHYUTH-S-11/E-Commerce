@@ -1,13 +1,24 @@
 package com.platform.dto;
 
+import java.util.Set;
+
 public class AuthResponse {
     private String token;
     private String username;
     private String email;
     private String firstName;
     private String lastName;
+    private Set<String> roles;
 
+    
     public AuthResponse() {
+    }
+
+    public AuthResponse(String token, String username, String email, Set<String> roles) {
+        this.token = token;
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
     }
 
     public AuthResponse(String token, String username, String email) {
@@ -62,4 +73,21 @@ public class AuthResponse {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+    public Set<String> getRoles() {
+        return roles;
+    }
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+    // @Override
+    // public String toString() {
+    //     return "AuthResponse{" +
+    //             "token='" + token + '\'' +
+    //             ", username='" + username + '\'' +
+    //             ", email='" + email + '\'' +
+    //             ", firstName='" + firstName + '\'' +
+    //             ", lastName='" + lastName + '\'' +
+    //             ", roles=" + roles +
+    //             '}';
+    // }
 }

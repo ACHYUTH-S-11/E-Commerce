@@ -1,16 +1,21 @@
 package com.platform.security;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.util.Date;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.platform.model.Role;
 import com.platform.model.User;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JavaUtil {
@@ -21,17 +26,19 @@ public class JavaUtil {
     private static final long EXPIRATION_TIME = 3600000; // 1 hour in milliseconds
 
     public String generateToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId",user.getUsername());
-        claims.put("username", user.getUsername());
-        Key key = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(user.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 1 hour expiration
-                .signWith(key)
-                .compact();
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("userId", user.getUsername());
+    claims.put("username", user.getUsername());
+    // Add roles as a comma-separated string
+    claims.put("roles", user.getRoles().stream().map(Role::name).collect(Collectors.joining(",")));
+    Key key = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+    return Jwts.builder()
+            .setClaims(claims)
+            .setSubject(user.getUsername())
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .signWith(key)
+            .compact();
     }
 
     public String extractUsername(String token) {
